@@ -10,7 +10,7 @@ printf "Testing"
 
 while [ $port_range -gt 5 ]; do
 	printf "."
-	result=$(timeout --foreground --signal=9 10 ssh -q -o StrictHostKeyChecking=No $target -p $mid_port)
+	result=$(timeout --foreground --signal=2 10 ssh -q -o StrictHostKeyChecking=No $target -p $mid_port)
 
 	if [[ $result =~ Higher ]]; then	
 		top_port=$mid_port
@@ -25,14 +25,9 @@ fi
 	port_range=$(( $top_port - $low_port ))
 done
 
-for i in range {0..5}; do
-	port=$(( $low_port + $i ))
+for (( port=$low_port; port<=$top_port; port++ )); do
 	printf "."
-	result=$(timeout --foreground --signal=9 10 ssh -q -o StrictHostKeyChecking=No $target -p $port)
-	
-#	echo "DEBUG RESULT: $result"
-# NOTE - the ciphertext poem is in $result here when correct port is found, and could be used to decode the Secret
-# for display in the exit message
+	result=$(timeout --foreground --signal=2 10 ssh -q -o StrictHostKeyChecking=No $target -p $port)
 
 	if [[ $result =~ Higher ]] || [[ $result =~ Lower ]]; then
 	        continue
