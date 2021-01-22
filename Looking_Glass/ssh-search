@@ -20,7 +20,7 @@ while [ $port_range -gt 5 ]; do
 		printf "\nConnect to the real SSH service using:\n"
 		printf "ssh %s -p %s\n" $target $mid_port		
 		exit 0
-fi
+	fi
 	mid_port=$(( (($top_port - $low_port)/2) + $low_port ))
 	port_range=$(( $top_port - $low_port ))
 done
