@@ -4,6 +4,6 @@ usage:<br>
 ssh-search 10.10.16.141
 
 example result:<br>
-The real SSH service is on one of the remaing ports from 10048 to 10053.
-Test them using:
+The real SSH service is on one of the remaing ports from 10048 to 10053.<br>
+Test them using:<br>
 ssh -o StrictHostKeyChecking=No 10.10.16.141 -p 10048
