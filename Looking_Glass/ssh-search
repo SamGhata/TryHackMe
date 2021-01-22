@@ -8,7 +8,7 @@ port_range=$(( $top_port - $low_port ))
 
 while [ $port_range -gt 5 ]; do
 	echo -ne "Testing $mid_port.....               "\\r
-	result=$(timeout --foreground --signal=9 20 ssh -q -o StrictHostKeyChecking=No $target -p $mid_port)
+	result=$(timeout --foreground --signal=9 10 ssh -q -o StrictHostKeyChecking=No $target -p $mid_port)
 
 	if [[ $result =~ Higher ]]; then
 		echo -ne "Target port is lower than $mid_port."\\r
@@ -19,7 +19,8 @@ while [ $port_range -gt 5 ]; do
 		low_port=$mid_port
 		sleep 1
 	else
-		echo -e "\n\nThe real SSH service is on port $mid_port"
+		echo -e "\n\nConnect to the real SSH service using:"
+		echo "ssh $target -p $port"		
 		exit 0
 fi
 	mid_port=$(( (($top_port - $low_port)/2) + $low_port ))
@@ -29,7 +30,7 @@ done
 for i in range {0..5}; do
 	port=$(( $low_port + $i ))
 	echo -ne "Testing $port.....               "\\r
-	result=$(timeout --foreground --signal=9 20 ssh -q -o StrictHostKeyChecking=No $target -p $port)
+	result=$(timeout --foreground --signal=9 10 ssh -q -o StrictHostKeyChecking=No $target -p $port)
 	
 #	echo "DEBUG RESULT: $result"
 # NOTE - the ciphertext poem is in $result here when correct port is found, and could be used to decode the Secret
@@ -38,7 +39,8 @@ for i in range {0..5}; do
 	if [[ $result =~ Higher ]] || [[ $result =~ Lower ]]; then
 	        continue
 	else
-		echo -e "\n\nThe real SSH service is on port $port"
-		exit 0
+		echo -e "\n\nConnect to the real SSH service using:"
+		echo "ssh $target -p $port"
+		break
 	fi
 done
