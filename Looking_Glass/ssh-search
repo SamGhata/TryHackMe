@@ -7,7 +7,7 @@ mid_port=$(( (($top_port - $low_port)/2) + $low_port ))
 port_range=$(( $top_port - $low_port ))
 
 while [ $port_range -gt 5 ]; do
-	printf "Testing %d.....\r" $mid_port
+	printf "Testing %s.....\r" $mid_port
 	result=$(timeout --foreground --signal=9 10 ssh -q -o StrictHostKeyChecking=No $target -p $mid_port)
 
 	if [[ $result =~ Higher ]]; then	
@@ -15,8 +15,8 @@ while [ $port_range -gt 5 ]; do
 	elif [[ $result =~ Lower ]]; then
 		low_port=$mid_port
 	else
-		printf "\nConnect to the real SSH service using:\n"
-		printf "ssh %s -p %d\n" $target $mid_port		
+		printf "Connect to the real SSH service using:\n"
+		printf "ssh %s -p %s\n" $target $mid_port		
 		exit 0
 fi
 	mid_port=$(( (($top_port - $low_port)/2) + $low_port ))
@@ -35,8 +35,8 @@ for i in range {0..5}; do
 	if [[ $result =~ Higher ]] || [[ $result =~ Lower ]]; then
 	        continue
 	else
-		printf "\nConnect to the real SSH service using:\n"
-		printf "ssh %s -p %d\n" $target $port
+		printf "Connect to the real SSH service using:\n"
+		printf "ssh %s -p %s" $target $port
 		break
 	fi
 done
