@@ -7,20 +7,18 @@ mid_port=$(( (($top_port - $low_port)/2) + $low_port ))
 port_range=$(( $top_port - $low_port ))
 
 while [ $port_range -gt 5 ]; do
-	echo -ne "Testing $mid_port.....               "\\r
+	printf "Testing %d.....\r" $mid_port
 	result=$(timeout --foreground --signal=9 10 ssh -q -o StrictHostKeyChecking=No $target -p $mid_port)
 
-	if [[ $result =~ Higher ]]; then
-		echo -ne "Target port is lower than $mid_port."\\r
+	if [[ $result =~ Higher ]]; then	
 		top_port=$mid_port
 		sleep 1
 	elif [[ $result =~ Lower ]]; then
-		echo -ne "Target port is higher than $mid_port."\\r
 		low_port=$mid_port
 		sleep 1
 	else
-		echo -e "\n\nConnect to the real SSH service using:"
-		echo "ssh $target -p $port"		
+		printf "\nConnect to the real SSH service using:\n"
+		printf "ssh %s -p %d\n" $target $port		
 		exit 0
 fi
 	mid_port=$(( (($top_port - $low_port)/2) + $low_port ))
@@ -29,7 +27,7 @@ done
 
 for i in range {0..5}; do
 	port=$(( $low_port + $i ))
-	echo -ne "Testing $port.....               "\\r
+	printf "Testing %s.....\r" $port
 	result=$(timeout --foreground --signal=9 10 ssh -q -o StrictHostKeyChecking=No $target -p $port)
 	
 #	echo "DEBUG RESULT: $result"
@@ -39,8 +37,8 @@ for i in range {0..5}; do
 	if [[ $result =~ Higher ]] || [[ $result =~ Lower ]]; then
 	        continue
 	else
-		echo -e "\n\nConnect to the real SSH service using:"
-		echo "ssh $target -p $port"
+		printf "\nConnect to the real SSH service using:\n"
+		printf "ssh %s -p %d\n" $target $port
 		break
 	fi
 done
