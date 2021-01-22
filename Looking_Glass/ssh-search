@@ -8,7 +8,7 @@ port_range=$(( $top_port - $low_port ))
 
 while [ $port_range -gt 5 ]; do
 	echo -ne "Testing $mid_port.....               "\\r
-	result=$(timeout --foreground --signal=9 10 ssh -o StrictHostKeyChecking=No $target -p $mid_port)
+	result=$(timeout --foreground --signal=9 20 ssh -q -o StrictHostKeyChecking=No $target -p $mid_port)
 
 	if [[ $result =~ Higher ]]; then
 		echo -ne "Target port is lower than $mid_port."\\r
@@ -26,11 +26,12 @@ fi
 	port_range=$(( $top_port - $low_port ))
 done
 
+echo -ne "The real SSH service is on one of the remaing ports from $low_port to $top_port."
+
 for i in range 5; do
-#	result=""
 	port=$(( $low_port + $i ))
-	echo -ne "Testing $port.....               "\\r
-	result=$(timeout --foreground --signal=9 10 ssh -o StrictHostKeyChecking=No $target -p $port)
+	echo -ne "Testing $port.....                                                              "\\r
+	result=$(timeout --foreground --signal=9 20 ssh -q -o StrictHostKeyChecking=No $target -p $port)
 	
 	if [[ $result =~ Higher ]] || [[ $result =~ Lower ]]; then
 	        continue
