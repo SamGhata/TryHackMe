@@ -6,8 +6,10 @@ low_port=9000
 mid_port=$(( (($top_port - $low_port)/2) + $low_port ))
 port_range=$(( $top_port - $low_port ))
 
+printf "Testing"
+
 while [ $port_range -gt 5 ]; do
-	printf "Testing %s.....\r" $mid_port
+	printf "."
 	result=$(timeout --foreground --signal=9 10 ssh -q -o StrictHostKeyChecking=No $target -p $mid_port)
 
 	if [[ $result =~ Higher ]]; then	
@@ -15,7 +17,7 @@ while [ $port_range -gt 5 ]; do
 	elif [[ $result =~ Lower ]]; then
 		low_port=$mid_port
 	else
-		printf "Connect to the real SSH service using:\n"
+		printf "\nConnect to the real SSH service using:\n"
 		printf "ssh %s -p %s\n" $target $mid_port		
 		exit 0
 fi
@@ -25,7 +27,7 @@ done
 
 for i in range {0..5}; do
 	port=$(( $low_port + $i ))
-	printf "Testing %s.....\r" $port
+	printf "."
 	result=$(timeout --foreground --signal=9 10 ssh -q -o StrictHostKeyChecking=No $target -p $port)
 	
 #	echo "DEBUG RESULT: $result"
@@ -35,7 +37,7 @@ for i in range {0..5}; do
 	if [[ $result =~ Higher ]] || [[ $result =~ Lower ]]; then
 	        continue
 	else
-		printf "Connect to the real SSH service using:\n"
+		printf "\nConnect to the real SSH service using:\n"
 		printf "ssh %s -p %s" $target $port
 		break
 	fi
