@@ -6,10 +6,9 @@ low_port=9000
 mid_port=$(( (($top_port - $low_port)/2) + $low_port ))
 port_range=$(( $top_port - $low_port ))
 
-while [ $port_range -gt 5 ]
-do
+while [ $port_range -gt 5 ]; do
 	echo -ne "Testing $mid_port.....               "\\r
-	result=$(ssh -q -o StrictHostKeyChecking=No $target -p $mid_port)
+	result=$(timeout --foreground --signal=9 10 ssh -o StrictHostKeyChecking=No $target -p $mid_port)
 
 	if [[ $result =~ Higher ]]; then
 		echo -ne "Target port is lower than $mid_port."\\r
@@ -19,11 +18,24 @@ do
 		echo -ne "Target port is higher than $mid_port."\\r
 		low_port=$mid_port
 		sleep 1
+	else
+		echo -ne "The real SSH service is on port $mid_port"
+		exit 0
 fi
 	mid_port=$(( (($top_port - $low_port)/2) + $low_port ))
 	port_range=$(( $top_port - $low_port ))
 done
 
-echo -ne "The real SSH service is on one of the remaing ports from $low_port to $top_port."
-echo -e "\nTest them using:"
-echo "ssh -o StrictHostKeyChecking=No $target -p $low_port"
+for i in range 5; do
+#	result=""
+	port=$(( $low_port + $i ))
+	echo -ne "Testing $port.....               "\\r
+	result=$(timeout --foreground --signal=9 10 ssh -o StrictHostKeyChecking=No $target -p $port)
+	
+	if [[ $result =~ Higher ]] || [[ $result =~ Lower ]]; then
+	        continue
+	else
+		echo -ne "The real SSH service is on port $mid_port"
+		exit 0
+	fi
+done
