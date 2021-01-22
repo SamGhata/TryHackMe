@@ -12,13 +12,11 @@ while [ $port_range -gt 5 ]; do
 
 	if [[ $result =~ Higher ]]; then	
 		top_port=$mid_port
-		sleep 1
 	elif [[ $result =~ Lower ]]; then
 		low_port=$mid_port
-		sleep 1
 	else
 		printf "\nConnect to the real SSH service using:\n"
-		printf "ssh %s -p %d\n" $target $port		
+		printf "ssh %s -p %d\n" $target $mid_port		
 		exit 0
 fi
 	mid_port=$(( (($top_port - $low_port)/2) + $low_port ))
