@@ -6,6 +6,4 @@ usage:<br>
 example result:<br>
 Testing..............<br>
 Connect to the real SSH service using:<br>
-ssh 10.10.154.209 -p 13484%  <br>
-
-Note - the trailing "%  " is an artifact I can not find the source of or correct at this time.
+ssh 10.10.154.209 -p 13484<br>
