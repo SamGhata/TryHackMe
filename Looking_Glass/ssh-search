@@ -29,7 +29,8 @@ printf "Testing"
 
 while [ $port_range -gt 5 ]; do
   printf "."
-  result=$(timeout --foreground --signal=2 10 ssh -q -o StrictHostKeyChecking=No $TARGET -p $mid_port)
+  result=$(timeout --foreground --signal=2 10 \
+    ssh -q -o StrictHostKeyChecking=No $TARGET -p $mid_port)
   if [[ $result =~ Higher ]]; then	
     top_port=$mid_port
   elif [[ $result =~ Lower ]]; then
@@ -45,7 +46,8 @@ done
 
 for (( port=$low_port; port<=$top_port; port++ )); do
   printf "."
-  result=$(timeout --foreground --signal=2 10 ssh -q -o StrictHostKeyChecking=No $TARGET -p $port)
+  result=$(timeout --foreground --signal=2 10 \
+    ssh -q -o StrictHostKeyChecking=No $TARGET -p $port)
   if [[ $result =~ Higher ]] || [[ $result =~ Lower ]]; then
     continue
   else
