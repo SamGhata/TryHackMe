@@ -13,8 +13,8 @@
 TARGET=$1
 top_port=13999
 low_port=9000
-mid_port=$(( (($top_port - $low_port)/2) + $low_port ))
-port_range=$(( $top_port - $low_port ))
+mid_port=$(( (("${top_port}" - "${low_port}")/2) + "${low_port}" ))
+port_range=$(( "${top_port}" - "${low_port}" ))
 
 err() {
   echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" >&2
@@ -27,32 +27,32 @@ fi
 
 printf "Testing"
 
-while [ $port_range -gt 5 ]; do
+while [ "${port_range}" -gt 5 ]; do
   printf "."
   result=$(timeout --foreground --signal=2 10 \
-    ssh -q -o StrictHostKeyChecking=No $TARGET -p $mid_port)
-  if [[ $result =~ Higher ]]; then	
-    top_port=$mid_port
-  elif [[ $result =~ Lower ]]; then
-    low_port=$mid_port
+    ssh -q -o StrictHostKeyChecking=No "${TARGET}" -p "${mid_port}")
+  if [[ "${result}" =~ Higher ]]; then	
+    top_port="${mid_port}"
+  elif [[ "${result}" =~ Lower ]]; then
+    low_port="${mid_port}"
   else
     printf "\nConnect to the real SSH service using:\n"
-    printf "ssh %s -p %s\n" $TARGET $mid_port		
+    printf "ssh %s -p %s\n" "${TARGET}" "${mid_port}"		
     exit 0
   fi
-  mid_port=$(( (($top_port - $low_port)/2) + $low_port ))
-  port_range=$(( $top_port - $low_port ))
+  mid_port=$(( (("${top_port}" - "${low_port}")/2) + "${low_port}" ))
+  port_range=$(( "${top_port}" - "${low_port}" ))
 done
 
-for (( port=$low_port; port<=$top_port; port++ )); do
+for (( port="${low_port}"; port<="${top_port}"; port++ )); do
   printf "."
   result=$(timeout --foreground --signal=2 10 \
-    ssh -q -o StrictHostKeyChecking=No $TARGET -p $port)
-  if [[ $result =~ Higher ]] || [[ $result =~ Lower ]]; then
+    ssh -q -o StrictHostKeyChecking=No "${TARGET}" -p "${port}")
+  if [[ "${result}" =~ Higher ]] || [[ "${result}" =~ Lower ]]; then
     continue
   else
     printf "\nConnect to the real SSH service using:\n"
-    printf "ssh %s -p %s" $TARGET $port
-    break
+    printf "ssh %s -p %s\n" "${TARGET}" "${port}"
+    exit 0
   fi
 done
