@@ -38,9 +38,9 @@ while [ "${port_range}" -gt 5 ]; do
     low_port="${mid_port}"
   else
     printf "\nThe real SSH service is at:\n"
-    printf "ssh %s -p %s\n" "${TARGET}" "${port}"
+    printf "ssh %s -p %s\n" "${TARGET}" "${mid_port}"
     printf "Accessing\n"
-    gimee=$(./LG-cipher "${TARGET}" "${port}") && \
+    gimee=$(./LG-cipher "${TARGET}" "${mid_port}") && \
     dalogin=$(grep jabberwock <<< $gimee)
     dalogin=$(cut -d ":" -f 2 <<< $dalogin)
     echo "jabberwock's password is $dalogin"
