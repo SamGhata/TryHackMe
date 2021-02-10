@@ -45,7 +45,7 @@ if {$force_conservative} {
 set timeout -1
 set TARGET [lindex $argv 0]
 set LOCAL [lindex $argv 1]
-set PASSWORD [lindex $argv 1]
+set PASSWORD [lindex $argv 2]
 
 spawn ssh -o StrictHostKeyChecking=no jabberwock@$TARGET
 match_max 100000
