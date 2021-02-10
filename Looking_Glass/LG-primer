@@ -22,7 +22,7 @@ err() {
 }
 
 if [ -z "$1" ] || [ -z "$2" ]; then
-  err "The format is: ./LG-dropbear TARGET_IP LOCAL_IP"
+  err "The format is: ./LG-primer TARGET_IP LOCAL_IP"
   exit 1
 fi
 
